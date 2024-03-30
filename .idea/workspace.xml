@@ -72,7 +72,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.MsFormationApplication">
+  <component name="RunManager" selected="Spring Boot.MsScolariteApplication">
     <configuration name="MsBourseApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="ms-bourse" />
@@ -113,7 +113,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1711768475418</updated>
-      <workItem from="1711768476645" duration="4846000" />
+      <workItem from="1711768476645" duration="6219000" />
     </task>
     <servers />
   </component>

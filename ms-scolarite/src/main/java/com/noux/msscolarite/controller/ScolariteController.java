@@ -30,8 +30,23 @@ public class ScolariteController {
     @Resource
     BourseProxy bourseProxy;
 
+
+   // http://localhost:8082/api/v1/etudiantV/{idE}
+    @GetMapping("/etudiantV/{idE}")
+    public ResponseEntity<?> getEtudiantWithVirements(@PathVariable("idE") Long idE) {
+        Optional<Etudiant> etudiantOptional = etudiantRepository.findById(idE);
+        if (etudiantOptional.isPresent()) {
+            Etudiant etudiant = etudiantOptional.get();
+            etudiant.setVirements(new ArrayList(bourseProxy.getVirements(idE,"toscolarite").getContent()));
+            return ResponseEntity.ok(etudiant);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Etudiant not found with id " + idE);
+    }
+
+    // http://localhost:8082/api/v1/etudiantF/{idE}
     @GetMapping("/etudiantF/{idE}")
-    public ResponseEntity<?> getEtudiantwithFomation(@PathVariable("idE") Long idE) {
+    public ResponseEntity<?> getEtudiantWithFormation(@PathVariable("idE") Long idE) {
         Optional<Etudiant> etudiantOpt = etudiantRepository.findById(idE);
         if (etudiantOpt.isPresent()) {
             Etudiant etudiant = etudiantOpt.get();
@@ -49,49 +64,33 @@ public class ScolariteController {
                 .body("Etudiant not found with id " + idE);
     }
 
-    @GetMapping("/etudiantV/{idE}")
-    public ResponseEntity<?> getEtudiantWithVirements(@PathVariable("idE") Long idE) {
-        Optional<Etudiant> etudiantOptional = etudiantRepository.findById(idE);
-        if (etudiantOptional.isPresent()) {
-            Etudiant etudiant = etudiantOptional.get();
-            etudiant.setVirements(new ArrayList(bourseProxy.getVirements(idE,"toscolarite").getContent()));
+    // http://localhost:8082/api/v1/etudiants/{id}
+    @GetMapping("/etudiants/{id}")
+    public ResponseEntity<?> getEtudiantWithFormationBourse(@PathVariable("id") Long ide) {
+        Optional<Etudiant> etudiantOpt = etudiantRepository.findById(ide);
+        if (etudiantOpt.isPresent()) {
+            Etudiant etudiant = etudiantOpt.get();
+            Formation formation = formationProxy.getFormation(etudiant.getIdFormation());
+            etudiant.setFormation(formation);
+            etudiant.setVirements(new ArrayList(bourseProxy.getVirements(ide, "toscolarite").getContent()));
             return ResponseEntity.ok(etudiant);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("Etudiant not found with id " + idE);
+                .body("Etudiant not found with id " + ide);
     }
 
-
-    @GetMapping("/etudiants/{id}")
-    public Etudiant getEtudiantWithFormationBourse(@PathVariable("id") Long ide)
-    {
-        Etudiant etudiant=etudiantRepository.findById(ide).get();
-
-        Formation formation= formationProxy.getFormation(etudiant.getIdFormation());
-
-        etudiant.setFormation(formation);
-        etudiant.setVirements(new ArrayList(bourseProxy.getVirements(ide,"toscolarite").getContent()));
-
-        return  etudiant;
-    }
-
+    // http://localhost:8082/api/v1/etudiants
     @GetMapping("/etudiants")
-    public List<Etudiant> getEtudiantsWithFormationBourse()
-    {
-        List<Etudiant> etudiants= etudiantRepository.findAll();
+    public ResponseEntity<List<Etudiant>> getEtudiantsWithFormationBourse() {
+        List<Etudiant> etudiants = etudiantRepository.findAll();
 
-        etudiants.forEach((e)->{
-                    e.setVirements(new ArrayList<>(bourseProxy.getVirements(e.getIdEtudiant(),
-                            "toscolarite").getContent()));
+        etudiants.forEach((e) -> {
+            e.setVirements(new ArrayList<>(bourseProxy.getVirements(e.getIdEtudiant(),
+                    "toscolarite").getContent()));
+            e.setFormation(formationProxy.getFormation(e.getIdFormation()));
+        });
 
-                    e.setFormation(formationProxy.getFormation(e.getIdFormation()));
-                }
-
-        );
-
-        return etudiants;
+        return ResponseEntity.ok(etudiants);
     }
-
-
 
 }
